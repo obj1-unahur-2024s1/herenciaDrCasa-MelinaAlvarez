@@ -1,0 +1,50 @@
+import drCasa.*
+
+describe "Temporada 1"{
+	//Enfermedades
+	const malaria = new EnfermedadesInfecciosas(celulasAmenazadas = 500)
+	const malariaPotente = new EnfermedadesInfecciosas(celulasAmenazadas = 800)
+	const otitis = new EnfermedadesInfecciosas(celulasAmenazadas = 100)
+	const lupus = new EnfermedadesAutoinmunes(celulasAmenazadas = 10000)
+	
+	//Personas
+	const Logan = new Persona(celulas = 3000000, temperatura = 36)
+	const Frank = new Persona(celulas = 3500000, temperatura = 36)
+	
+	
+	test "Frank contrae malaria"{
+		Frank.contraer(malaria)
+		Frank.pasaUnDia()
+		assert.equals(36.5, Frank.temperatura())
+	}
+	
+	test "Logan contrae malaria"{
+		Logan.contraer(malaria)
+		malaria.reproducirse()
+		assert.equals(1000, malaria.celulasAmenazadas())
+	}
+	
+	test "Logan vive un dia de su vida"{
+		Logan.contraer(malaria)
+		Logan.pasaUnDia()
+		assert.equals(36.5, Logan.temperatura())
+	}
+	
+	test "Cantidad de celulas amenazadas de Logan"{
+		Logan.contraer(malaria)
+		Logan.contraer(otitis)
+		Logan.contraer(lupus)
+		assert.equals(0, Logan.celulasAmenazadasPorEnfermedadesAgresivas())
+	}
+	
+	test "Enfermedad que mas celulas afecte"{
+		Logan.contraer(malaria)
+		Logan.contraer(otitis)
+		Logan.contraer(lupus)
+		assert.equals(lupus, Logan.enfermedadQueMasAfecta())
+	}
+	
+	
+	
+	
+}
