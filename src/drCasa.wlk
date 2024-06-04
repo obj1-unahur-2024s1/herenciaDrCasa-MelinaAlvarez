@@ -1,3 +1,5 @@
+import enfermedad.*
+
 class Persona{
 	const enfermedades = []
 	var property celulas
@@ -9,11 +11,8 @@ class Persona{
 		temperatura = 45.min(temperatura + valor)
 	}
 	method contraer(enfermedad){
-		enfermedades.add(enfermedad)
-	}
-	
-	method curarEnfermedad(enfermedad){
-		enfermedades.remove(enfermedad)
+		if (enfermedades.size() < 5)
+			enfermedades.add(enfermedad)
 	}
 	
 	method destruirCelulas(valor){
@@ -32,18 +31,30 @@ class Persona{
 		return enfermedades.max({e=>e.celulasAmenazadas()})
 	}
 	
+	method celAmenazadas(){
+		return enfermedades.sum({e=>e.celulasAmenazadas()})
+	}
+	
 	method atenuarEnfermedad(dosis){
-		enfermedades.forEach({e=>e.atenuarCelulas(dosis)})
+		enfermedades.forEach({e=>e.atenuarCelulas(dosis*15)})
 		enfermedades.removeAll(enfermedades.filter({e=>e.estaCurada()}))
 	}
 	
+	method temperaturaMortal(){
+		temperatura = 0
+	}	
 }
 
 class Medico inherits Persona{
-	var dosis = 0
+	var dosis 
 	
 	method atender(persona){
 		persona.atenuarEnfermedad(dosis)
+	}
+	
+	override method contraer(enfermedad){
+		super(enfermedad)
+		self.atender(self)
 	}
 }
 
@@ -54,46 +65,16 @@ class JefeMedico inherits Medico{
 		medicos.add(medico)
 	}
 	
-	method asignarMedico(persona){
+	method jefeAtiende(persona){
+		persona.atenuarEnfermedad(dosis)
+	}
+	
+	override method atender(persona){	
 		medicos.anyOne().atender(persona)
 	}
-}
-
-class Enfermedad{
-	var celulasAmenazadas
 	
-	method celulasAmenazadas() = celulasAmenazadas
-	
-	method atenuarCelulas(dosis){
-		celulasAmenazadas = 0.max(celulasAmenazadas - dosis*15)
+	override method contraer(enfermedad){
+		enfermedades.add(enfermedad)
+		self.atenuarEnfermedad(dosis)
 	}
-	
-	method estaCurada() = celulasAmenazadas == 0
-}
-
-class EnfermedadesInfecciosas inherits Enfermedad{
-
-	method producirEfecto(persona){
-		persona.aumentarTemperatura(celulasAmenazadas/1000)
-	}
-	
-	method reproducirse(){
-		celulasAmenazadas = celulasAmenazadas*2
-	}
-	
-	method esAgresiva(persona){
-		return celulasAmenazadas > persona.celulas()*0.1 
-	}
-}
-
-class EnfermedadesAutoinmunes inherits Enfermedad{
-	
-	var cantEfecto = 0
-	
-	method producirEfecto(persona){
-		persona.destruirCelulas(celulasAmenazadas)
-		cantEfecto += 1
-	}
-	
-	method esAgresiva(persona) = cantEfecto > 30
 }

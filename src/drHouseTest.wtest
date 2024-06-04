@@ -1,4 +1,5 @@
 import drCasa.*
+import enfermedad.*
 
 describe "Temporada 1"{
 	//Enfermedades
@@ -42,9 +43,34 @@ describe "Temporada 1"{
 		Logan.contraer(otitis)
 		Logan.contraer(lupus)
 		assert.equals(lupus, Logan.enfermedadQueMasAfecta())
+	}	
+}
+
+describe "Temporada 2"{
+	const malaria = new EnfermedadesInfecciosas(celulasAmenazadas = 500)
+	const lupus = new EnfermedadesAutoinmunes(celulasAmenazadas = 10000)
+	
+	//Personas
+	const Logan = new Persona(celulas = 3000000, temperatura = 36)
+	const Cameron = new Medico(celulas = 1000000, temperatura = 36, dosis = 10)
+	const House = new JefeMedico(celulas = 2000000, temperatura = 36, dosis = 20)
+	
+	test"Cameron atiende a Logan"{
+		Logan.contraer(malaria)
+		Logan.contraer(lupus)
+		Cameron.atender(Logan)
+		assert.equals(10200, Logan.celAmenazadas())
 	}
 	
+	test"Cameron contrae Malaria y House lo atiende"{
+		Cameron.contraer(malaria)
+		House.jefeAtiende(Cameron)
+		assert.equals(50,Cameron.celAmenazadas())
+	}
 	
-	
-	
+	test"House contrae la muerte"{
+		House.contraer(muerte)
+		House.pasaUnDia()
+		assert.equals(0,House.temperatura())
+	}
 }
